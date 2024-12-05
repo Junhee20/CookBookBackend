@@ -86,6 +86,28 @@ app.post("/api/recipes", async (req, res) => {
   }
 });
 
+let contactMessages = []; // In-memory storage for contact messages
+
+// POST route to handle contact form submissions
+app.post("/api/contact", (req, res) => {
+  const { name, email, subject, message } = req.body;
+
+  if (!name || !email || !subject || !message) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  // Store the message in the in-memory array
+  const newContactMessage = { name, email, subject, message, timestamp: new Date() };
+  contactMessages.push(newContactMessage);
+
+  res.status(200).json({ success: "Message sent successfully!" });
+});
+
+// Route to fetch all stored contact messages (optional)
+app.get("/api/contact", (req, res) => {
+  res.json(contactMessages);
+});
+
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
