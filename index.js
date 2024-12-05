@@ -23,6 +23,8 @@ const main = async () => {
 main();
 
 // Routes
+
+// GET route to fetch all recipes
 app.get("/api/recipes", async (req, res) => {
   try {
     const recipes = await Recipe.find();
@@ -32,13 +34,55 @@ app.get("/api/recipes", async (req, res) => {
   }
 });
 
-app.get("/api/recipesinfo/:id", async (req, res) => {
+// GET route to fetch a specific recipe by ID
+app.get("/api/recipes/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const recipe = await Recipe.findById(id);
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
     res.json(recipe);
   } catch (err) {
-    res.status(500).send(`Error: ${err.message}`);
+    res.status(500).json({ message: `Error: ${err.message}` });
+  }
+});
+
+// DELETE route to handle recipe deletion by ID
+app.delete("/api/recipes/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedRecipe = await Recipe.findByIdAndDelete(id);
+    if (!deletedRecipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+    res.status(200).json({ message: "Recipe deleted successfully", deletedRecipe });
+  } catch (err) {
+    res.status(500).json({ message: `Error deleting recipe: ${err.message}` });
+  }
+});
+
+// POST route to handle adding a new recipe
+app.post("/api/recipes", async (req, res) => {
+  const { title, image, ingredients, instructions, rating } = req.body;
+
+  if (!title || !image || !ingredients || !instructions || !rating) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  const newRecipe = new Recipe({
+    title,
+    image,
+    ingredients,
+    instructions,
+    rating,
+  });
+
+  try {
+    const savedRecipe = await newRecipe.save();
+    res.status(201).json({ message: "Recipe added successfully", savedRecipe });
+  } catch (err) {
+    res.status(500).json({ message: `Error adding recipe: ${err.message}` });
   }
 });
 
@@ -46,4 +90,3 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-

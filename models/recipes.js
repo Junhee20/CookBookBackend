@@ -1,38 +1,32 @@
 import mongoose from 'mongoose';
 
 // 1. Create a schema
-// This recipeSchema lays down the foundation for every new recipe that will be added to our database.
-// Performing Validations while defining the schema
+// This recipeSchema defines the fields and validations for each recipe document
 const recipeSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: [true, "Please check the entry, no title specified."]
-    },
-    price: {
-        type: Number,
-        required: [true, "Please check the entry, no price specified."]
-    },
-    rating: {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: [true, "The rating is required, please specify a value between 1 - 5."]
-    },
-    image: {
-        type: String,
-        required: [true, "Please provide an image URL."]
-    },
-    like: {
-        type: Boolean,
-        default: false
-    }
+  title: {
+    type: String,
+    required: [true, "Please check the entry, no title specified."]
+  },
+  image: {
+    type: String,
+    required: [true, "Please provide an image URL."]
+  },
+  ingredients: {
+    type: String,
+    required: [true, "Ingredients are required."]
+  },
+  instructions: {
+    type: String,
+    required: [true, "Instructions are required."]
+  },
+  rating: {
+    type: Number,
+    required: [true, "The rating is required, please specify a value between 1 - 5."],
+    min: 1,
+    max: 5
+  }
 });
 
-// 2. Compiling our schema into a Model.
-// Use the schema to create a mongoose model - specify two parameters:
-// first is the name of the collection that complies with this particular schema
-// If you have a collection of recipes, you use the word Recipe in singular form
-// and Mongoose will convert this string to a plural form to create your collection.
-// A model is a class with which we construct documents.
-
+// 2. Compiling our schema into a Model
+// Creating a model using the recipeSchema and exporting it as Recipe
 export const Recipe = mongoose.model("Recipe", recipeSchema);
